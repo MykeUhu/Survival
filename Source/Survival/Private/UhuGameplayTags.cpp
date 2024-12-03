@@ -298,4 +298,44 @@ void FUhuGameplayTags::InitializeNativeGameplayTags()
 		FName("Ability.Hologram.Botany"),
 		FString("Displays information about plants, food, and the environment using a hologram.")
 	);
+
+	/*
+	 * Drone Communication Tags
+	 */
+	GameplayTags.Emote_DroneCommand_Sleep = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Emote.DroneCommand.Sleep"),
+		FString("Command the drone to set up a sleep place")
+	);
+	GameplayTags.Emote_DroneCommand_Gather = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Emote.DroneCommand.Gather"),
+		FString("Command the drone to gather resources")
+	);
+	GameplayTags.Emote_DroneCommand_Build = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Emote.DroneCommand.Build"),
+		FString("Command the drone to build structures")
+	);
+	GameplayTags.Emote_DroneCommand_Scan = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Emote.DroneCommand.Scan"),
+		FString("Command the drone to scan the environment")
+	);
+
+	/*
+	 * Skill System Tags
+	 */
+	GameplayTags.Skill_Running = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Skill.Running"),
+		FString("Running skill progression")
+	);
+	GameplayTags.Skill_Walking = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Skill.Walking"),
+		FString("Walking skill progression")
+	);
+	GameplayTags.Skill_Crafting = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Skill.Crafting"),
+		FString("Crafting skill progression")
+	);
+	GameplayTags.Skill_Survival = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Skill.Survival"),
+		FString("Survival skill progression")
+	);
 }

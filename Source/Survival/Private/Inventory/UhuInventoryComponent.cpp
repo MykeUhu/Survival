@@ -69,11 +69,11 @@ float UUhuInventoryComponent::GetTotalWeight() const
 	return TotalWeight;
 }
 
-bool UUhuInventoryComponent::HasItem(const FString& Key, int Value)
+bool UUhuInventoryComponent::HasItem(const FString& ItemName, int32 Quantity) const
 {
 	for (const FInventoryItem& Item : Inventory)
 	{
-		if (Item.ItemName == Key && Item.Quantity >= Value)
+		if (Item.ItemName == ItemName && Item.Quantity >= Quantity)
 		{
 			return true;
 		}

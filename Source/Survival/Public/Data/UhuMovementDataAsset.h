@@ -33,6 +33,5 @@ public:
 	TArray<FMovementSpeedLevel> SpeedLevels;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	FMovementSpeedLevel GetSpeedLevelForIndex(int32 Index) const;
+	FMovementSpeedLevel GetSpeedLevelForTag(FGameplayTag SpeedTag) const;
 };
-

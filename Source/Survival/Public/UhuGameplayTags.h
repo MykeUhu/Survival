@@ -39,7 +39,7 @@ public:
 	*/
 	FGameplayTag Attribute_Primary_Endurance;		// Bonus: MaxHunger, HealthRegeneration				// Gesteigert durch: Cleanliness, Perception
 	FGameplayTag Attribute_Primary_Strength;		// Bonus: MaxHealth, HungerRegeneration				// Gesteigert durch: Communication, Survivability
-	FGameplayTag Attribute_Primary_Agility;			// Bonus: MaxThirst, ThirstRegeneration				// Gesteigert durch: Cleverness, Botany
+	FGameplayTag Attribute_Primary_Agility;			// Bonus: MaxStamina, ThirstRegeneration			// Gesteigert durch: Cleverness, Botany
 	FGameplayTag Attribute_Primary_Intelligence;	// Bonus: MaxThirst, StaminaRegeneration			// Gesteigert durch: Engineering, Technology
 	
 
@@ -112,6 +112,22 @@ public:
 
 	FGameplayTag Ability_Hologram_Vitals;           // Hologramm für Vitalwerte: Projiziert die Vitalwerte des Charakters als Hologramm
 	FGameplayTag Ability_Hologram_Botany;           // Emote-Botanik: Zeigt Informationen über Pflanzen, Nahrung usw. in der Umgebung an durch Hologramm
+
+	/*
+	* Drone Communication Tags
+	*/
+	FGameplayTag Emote_DroneCommand_Sleep;
+	FGameplayTag Emote_DroneCommand_Gather;
+	FGameplayTag Emote_DroneCommand_Build;
+	FGameplayTag Emote_DroneCommand_Scan;
+
+	/*
+	* Skill System Tags
+	*/
+	FGameplayTag Skill_Running;
+	FGameplayTag Skill_Walking;
+	FGameplayTag Skill_Crafting;
+	FGameplayTag Skill_Survival;
 
 private:
 	static FUhuGameplayTags GameplayTags;

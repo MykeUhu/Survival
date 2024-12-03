@@ -41,9 +41,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	float GetTotalWeight() const;
-    
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	bool HasItem(const FString& Key, int Value);
+	bool HasItem(const FString& ItemName, int32 Quantity = 1) const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -55,3 +55,4 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float MaxWeight;
 };
+

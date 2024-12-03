@@ -48,8 +48,6 @@ struct FEffectProperties
     ACharacter* TargetCharacter = nullptr;
 };
 
-// typedef is specific to the FGameplayAttribute() signature, but TStaticFunPtr is generic to any signature chosen
-//typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
 template<class T>
 using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
@@ -221,7 +219,7 @@ public:
     void OnRep_Survivability(const FGameplayAttributeData& OldSurvivability) const;
 
     UFUNCTION()
-        void OnRep_Engineering(const FGameplayAttributeData& OldEngineering) const;
+    void OnRep_Engineering(const FGameplayAttributeData& OldEngineering) const;
 
     UFUNCTION()
     void OnRep_Botany(const FGameplayAttributeData& OldBotany) const;

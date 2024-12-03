@@ -3,12 +3,14 @@
 
 #include "Data/UhuMovementDataAsset.h"
 
-FMovementSpeedLevel UUhuMovementDataAsset::GetSpeedLevelForIndex(int32 Index) const
+FMovementSpeedLevel UUhuMovementDataAsset::GetSpeedLevelForTag(FGameplayTag SpeedTag) const
 {
-	if (SpeedLevels.IsValidIndex(Index))
+	for (const FMovementSpeedLevel& SpeedLevel : SpeedLevels)
 	{
-		return SpeedLevels[Index];
+		if (SpeedLevel.SpeedTag == SpeedTag)
+		{
+			return SpeedLevel;
+		}
 	}
 	return FMovementSpeedLevel();
 }
-

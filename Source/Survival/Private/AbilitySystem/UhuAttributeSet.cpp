@@ -91,6 +91,7 @@ void UUhuAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
     DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Engineering, COND_None, REPNOTIFY_Always);
     DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Botany, COND_None, REPNOTIFY_Always);
     DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Technology, COND_None, REPNOTIFY_Always);
+
     // Resistances
     DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, ResTemperature, COND_None, REPNOTIFY_Always);
 }

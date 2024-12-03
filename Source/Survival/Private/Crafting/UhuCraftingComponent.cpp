@@ -4,7 +4,7 @@
 #include "Crafting/UhuCraftingComponent.h"
 #include "Inventory/UhuInventoryComponent.h"
 
-UUhuCraftingComponent::UUhuCraftingComponent(): InventoryComponent(nullptr)
+UUhuCraftingComponent::UUhuCraftingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }

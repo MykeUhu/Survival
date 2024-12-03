@@ -7,54 +7,58 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/UhuAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UhuGameplayTags.h"
+#include "Components/UhuSkillLevelingComponent.h"
 
-// Sets default values
 AUhuSurvivalCharacter::AUhuSurvivalCharacter()
 {
-    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
-    // Initialize AbilitySystemComponent
-    AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+    AbilitySystemComponent = CreateDefaultSubobject<UUhuAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+    SkillLevelingComponent = CreateDefaultSubobject<UUhuSkillLevelingComponent>(TEXT("SkillLevelingComponent"));
+    
+    TotalDistanceWalked = 0.0f;
+    TotalDistanceRun = 0.0f;
 }
 
-// Called when the game starts or when spawned
 void AUhuSurvivalCharacter::BeginPlay()
 {
     Super::BeginPlay();
+    
+    InitializeDefaultAttributes();
 }
 
-void AUhuSurvivalCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const
-{
-    check(IsValid(GetAbilitySystemComponent()));
-    check(GameplayEffectClass);
-    FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-    ContextHandle.AddSourceObject(this);
-    const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
-    GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
-}
-
-void AUhuSurvivalCharacter::InitializeDefaultAttributes() const
-{
-    ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
-    ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
-    ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
-   
-}
-
-// Called every frame
 void AUhuSurvivalCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    UpdateDistanceTraveled(DeltaTime);
 }
 
-// Called to bind functionality to input
+void AUhuSurvivalCharacter::UpdateDistanceTraveled(float DeltaTime)
+{
+    if (GetVelocity().Size() > 0)
+    {
+        float Distance = GetVelocity().Size() * DeltaTime;
+        
+        if (CurrentSpeedLevel > 5)  // Speeds above level 5 are considered running
+        {
+            TotalDistanceRun += Distance;
+            SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Running, Distance);
+        }
+        else
+        {
+            TotalDistanceWalked += Distance;
+            SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Walking, Distance);
+        }
+    }
+}
+
 void AUhuSurvivalCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-// Implement IAbilitySystemInterface
 UAbilitySystemComponent* AUhuSurvivalCharacter::GetAbilitySystemComponent() const
 {
     return AbilitySystemComponent;
@@ -93,3 +97,23 @@ void AUhuSurvivalCharacter::UpdateMovementSpeed(int32 SpeedLevel)
     // Update character movement
     GetCharacterMovement()->MaxWalkSpeed = NewSpeedLevel.Speed;
 }
+
+void AUhuSurvivalCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const
+{
+    FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+    EffectContext.AddSourceObject(this);
+
+    FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffectClass, Level, EffectContext);
+    if (NewHandle.IsValid())
+    {
+        FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
+    }
+}
+
+void AUhuSurvivalCharacter::InitializeDefaultAttributes() const
+{
+    ApplyEffectToSelf(DefaultVitalAttributes, 1.0f);
+    ApplyEffectToSelf(DefaultPrimaryAttributes, 1.0f);
+    ApplyEffectToSelf(DefaultSecondaryAttributes, 1.0f);
+}
+
