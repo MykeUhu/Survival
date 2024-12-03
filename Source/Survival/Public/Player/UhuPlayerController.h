@@ -34,7 +34,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	TObjectPtr<UUhuMovementDataAsset> MovementDataAsset;
-
+	
 	void AdjustSpeedWithMouseWheel(const FInputActionValue& InputValue);
 	void UpdateMovementSpeedTag(int32 SpeedIndex);
 

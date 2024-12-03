@@ -17,7 +17,7 @@
 
 ### Character Blueprint
 
-- [ ] Create a Blueprint class based on AUhuSurvivalCharacter
+- ✅ Create a Blueprint class based on AUhuSurvivalCharacter
 - [ ] Set up character mesh and animations
 - [ ] Implement character movement input
 - [ ] Create UI for displaying character stats (Health, Stamina, Hunger, Thirst)

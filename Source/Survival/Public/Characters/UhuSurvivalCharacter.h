@@ -36,6 +36,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     float GetTotalDistanceRun() const { return TotalDistanceRun; }
 
+    // Setzt den aktuellen MovementSpeedTag und aktualisiert die Geschwindigkeit
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void SetMovementSpeedTag(FGameplayTag NewSpeedTag);
+
+    // Wendet die Geschwindigkeit auf den Charakter an
+    void ApplyMovementSpeed(float Speed);
+
 protected:
     virtual void BeginPlay() override;
 
@@ -48,6 +55,10 @@ protected:
     UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Attributes")
     TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
 
+    // Aktueller GameplayTag für die Bewegungsgeschwindigkeit
+    UPROPERTY(BlueprintReadWrite, Category = "Movement")
+    FGameplayTag CurrentSpeedTag;
+    
     UPROPERTY(EditAnywhere, Category = "Movement")
     TObjectPtr<UUhuMovementDataAsset> MovementDataAsset;
     

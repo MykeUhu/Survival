@@ -34,4 +34,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	FMovementSpeedLevel GetSpeedLevelForTag(FGameplayTag SpeedTag) const;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Default")
+	FGameplayTag DefaultSpeedTag;
 };

@@ -21,11 +21,65 @@ AUhuSurvivalCharacter::AUhuSurvivalCharacter()
     TotalDistanceRun = 0.0f;
 }
 
+void AUhuSurvivalCharacter::SetMovementSpeedTag(FGameplayTag NewSpeedTag)
+{
+    if (!MovementDataAsset || !NewSpeedTag.IsValid())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid Movement Data Asset or Speed Tag!"));
+        return;
+    }
+
+    // Entferne das alte Tag
+    if (AbilitySystemComponent)
+    {
+        AbilitySystemComponent->RemoveLooseGameplayTag(CurrentSpeedTag);
+    }
+
+    // Setze das neue Tag
+    CurrentSpeedTag = NewSpeedTag;
+    if (AbilitySystemComponent)
+    {
+        AbilitySystemComponent->AddLooseGameplayTag(NewSpeedTag);
+        UE_LOG(LogTemp, Display, TEXT("Added GameplayTag: %s"), *NewSpeedTag.ToString());
+    }
+
+    // Setze die Geschwindigkeit des Characters
+    const FMovementSpeedLevel SpeedLevel = MovementDataAsset->GetSpeedLevelForTag(NewSpeedTag);
+    if (SpeedLevel.Speed >= 0.f)
+    {
+        ApplyMovementSpeed(SpeedLevel.Speed);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Invalid Speed Level for Tag: %s"), *NewSpeedTag.ToString());
+    }
+}
+
+
+void AUhuSurvivalCharacter::ApplyMovementSpeed(float Speed)
+{
+    // Setze die MaxWalkSpeed im MovementComponent
+    if (GetCharacterMovement())
+    {
+        GetCharacterMovement()->MaxWalkSpeed = Speed;
+    }
+}
+
 void AUhuSurvivalCharacter::BeginPlay()
 {
     Super::BeginPlay();
     
     InitializeDefaultAttributes();
+    // Setze den Standard-Speed-Tag, falls definiert
+    if (MovementDataAsset && MovementDataAsset->DefaultSpeedTag.IsValid())
+    {
+        // Setze den Standard-Movement-Tag
+        SetMovementSpeedTag(MovementDataAsset->DefaultSpeedTag);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No Default Speed Tag defined in Movement Data Asset!"));
+    }
 }
 
 void AUhuSurvivalCharacter::Tick(float DeltaTime)
