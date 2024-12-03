@@ -30,6 +30,9 @@ protected:
 	TObjectPtr<UInputAction> SpeedAdjustAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
@@ -38,6 +41,8 @@ protected:
 	void AdjustSpeedWithMouseWheel(const FInputActionValue& InputValue);
 	void UpdateMovementSpeedTag(int32 SpeedIndex);
 
+	void Move(const FInputActionValue& InputValue);
+	
 	UFUNCTION(BlueprintCallable, Category = "AbilitySystem")
 	UUhuAbilitySystemComponent* GetASC();
 

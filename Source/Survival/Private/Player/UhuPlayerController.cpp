@@ -32,6 +32,7 @@ void AUhuPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(SpeedAdjustAction, ETriggerEvent::Triggered, this, &AUhuPlayerController::AdjustSpeedWithMouseWheel);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUhuPlayerController::Move);
 	}
 }
 
@@ -64,6 +65,16 @@ void AUhuPlayerController::UpdateMovementSpeedTag(int32 SpeedIndex)
 		ControlledCharacter->SetMovementSpeedTag(NewSpeedTag);
 	}
 }
+
+void AUhuPlayerController::Move(const FInputActionValue& InputValue)
+{
+	if (AUhuSurvivalCharacter* ControlledCharacter = Cast<AUhuSurvivalCharacter>(GetPawn()))
+	{
+		// Übergibt die Richtung als FVector2D an den Character
+		ControlledCharacter->CharacterMove(InputValue.Get<FVector2D>());
+	}
+}
+
 
 
 UUhuAbilitySystemComponent* AUhuPlayerController::GetASC()

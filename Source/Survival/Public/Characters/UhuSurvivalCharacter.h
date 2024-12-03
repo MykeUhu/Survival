@@ -1,12 +1,15 @@
 // UhuSurvivalCharacter.h
 // Copyright by MykeUhu
 
+// TODO: Check if ther are to much bools and MovementSpeed Functions
+// TODO: Running Distance to UhuSkillLevelingComponent
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
+#include "UhuGameplayTags.h"
 #include "UhuSurvivalCharacter.generated.h"
 
 class UUhuMovementDataAsset;
@@ -36,12 +39,22 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     float GetTotalDistanceRun() const { return TotalDistanceRun; }
 
+    // Liefert die gelaufene Distanz in Kilometern, gerundet auf eine Nachkommastelle
+    UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
+    float GetTotalDistanceWalkedKM() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
+    float GetTotalDistanceRunKM() const;
+
     // Setzt den aktuellen MovementSpeedTag und aktualisiert die Geschwindigkeit
-    UFUNCTION(BlueprintCallable, Category = "Movement")
+    UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     void SetMovementSpeedTag(FGameplayTag NewSpeedTag);
 
     // Wendet die Geschwindigkeit auf den Charakter an
     void ApplyMovementSpeed(float Speed);
+
+    // Vom PlayerController
+    void CharacterMove(const FVector2D& MoveDirection);
 
 protected:
     virtual void BeginPlay() override;
@@ -86,6 +99,10 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
     float TotalDistanceRun;
 
+    // Identifiziert den aktuellen Bewegungstyp basierend auf den GameplayTags
+    bool IsWalking() const;
+    bool IsRunning() const;
+    
     void UpdateDistanceTraveled(float DeltaTime);
 };
 

@@ -21,6 +21,16 @@ AUhuSurvivalCharacter::AUhuSurvivalCharacter()
     TotalDistanceRun = 0.0f;
 }
 
+float AUhuSurvivalCharacter::GetTotalDistanceWalkedKM() const
+{
+    return FMath::RoundToFloat((TotalDistanceWalked / 100000.0f) * 10.0f) / 10.0f;
+}
+
+float AUhuSurvivalCharacter::GetTotalDistanceRunKM() const
+{
+    return FMath::RoundToFloat((TotalDistanceRun / 100000.0f) * 10.0f) / 10.0f;
+}
+
 void AUhuSurvivalCharacter::SetMovementSpeedTag(FGameplayTag NewSpeedTag)
 {
     if (!MovementDataAsset || !NewSpeedTag.IsValid())
@@ -65,6 +75,32 @@ void AUhuSurvivalCharacter::ApplyMovementSpeed(float Speed)
     }
 }
 
+void AUhuSurvivalCharacter::CharacterMove(const FVector2D& MoveDirection)
+{
+    if (Controller)
+    {
+        // Vorwärtsbewegung (X-Achse)
+        if (MoveDirection.X != 0.0f)
+        {
+            const FRotator Rotation = Controller->GetControlRotation();
+            const FRotator YawRotation(0, Rotation.Yaw, 0);
+            const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+            AddMovementInput(ForwardDirection, MoveDirection.X);
+        }
+
+        // Seitwärtsbewegung (Y-Achse)
+        if (MoveDirection.Y != 0.0f)
+        {
+            const FRotator Rotation = Controller->GetControlRotation();
+            const FRotator YawRotation(0, Rotation.Yaw, 0);
+            const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+            AddMovementInput(RightDirection, MoveDirection.Y);
+        }
+    }
+}
+
 void AUhuSurvivalCharacter::BeginPlay()
 {
     Super::BeginPlay();
@@ -89,24 +125,51 @@ void AUhuSurvivalCharacter::Tick(float DeltaTime)
     UpdateDistanceTraveled(DeltaTime);
 }
 
+bool AUhuSurvivalCharacter::IsWalking() const
+{
+    return CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_1) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_2) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_3) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_4);
+}
+
+bool AUhuSurvivalCharacter::IsRunning() const
+{
+    return CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_5) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_6) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_7) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_8) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_9) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_10);
+}
+
 void AUhuSurvivalCharacter::UpdateDistanceTraveled(float DeltaTime)
 {
-    if (GetVelocity().Size() > 0)
+    float VelocityMagnitude = GetVelocity().Size();
+    
+    // Keine Bewegung -> Kein Update
+    if (VelocityMagnitude <= KINDA_SMALL_NUMBER)
     {
-        float Distance = GetVelocity().Size() * DeltaTime;
-        
-        if (CurrentSpeedLevel > 5)  // Speeds above level 5 are considered running
-        {
-            TotalDistanceRun += Distance;
-            SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Running, Distance);
-        }
-        else
-        {
-            TotalDistanceWalked += Distance;
-            SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Walking, Distance);
-        }
+        return;
+    }
+
+    // Distanzberechnung
+    float Distance = VelocityMagnitude * DeltaTime;
+
+    // Gehender Zustand
+    if (IsWalking())
+    {
+        TotalDistanceWalked += Distance;
+        SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Walking, Distance);
+    }
+    // Laufender/Sprintender Zustand
+    else if (IsRunning())
+    {
+        TotalDistanceRun += Distance;
+        SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Running, Distance);
     }
 }
+
 
 void AUhuSurvivalCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
