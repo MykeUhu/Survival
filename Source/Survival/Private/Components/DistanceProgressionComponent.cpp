@@ -49,6 +49,9 @@ void UDistanceProgressionComponent::CheckForNextMilestone()
 
 			// Hier können Belohnungen, Events usw. ausgelöst werden
 			UE_LOG(LogTemp, Log, TEXT("Meilenstein erreicht: %s"), *Milestone->MilestoneID.ToString());
+
+			// Ereignis auslösen
+			OnMilestoneReached.Broadcast();
 		}
 	}
 }

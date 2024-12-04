@@ -104,6 +104,12 @@ public:
 	/*
 	* Ability
 	*/
+
+	// Meta
+
+	FGameplayTag Abilities_None;
+	FGameplayTag Abilities_Status_Unlocked;
+	// Other
 	FGameplayTag Ability_Survival_FindConsumables;  // Survival-Nahrung oder Wasser entdecken: Markiert Nahrung oder Wasserquellen in der Umgebung durch Outline für gewisse Zeit
 
 	FGameplayTag Ability_Drone_Gathering;           // Emote-Ressourcen sammeln Befehl an Drohne: Sammelt mit AI Resourcen und bringt sie ins Lager oder offene Baustellen

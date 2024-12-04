@@ -2,6 +2,8 @@
 // Copyright by MykeUhu
 
 #include "AbilitySystem/UhuAbilitySystemComponent.h"
+
+#include "UhuGameplayTags.h"
 #include "AbilitySystem/UhuGameplayAbility.h"
 
 UUhuAbilitySystemComponent::UUhuAbilitySystemComponent()
@@ -31,6 +33,22 @@ void UUhuAbilitySystemComponent::InitializeAttributes()
 	}
 }
 
+void UUhuAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
+{
+	for (const TSubclassOf<UGameplayAbility> AbilityClass : StartupAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		if (const UUhuGameplayAbility* UhuAbility = Cast<UUhuGameplayAbility>(AbilitySpec.Ability))
+		{
+			AbilitySpec.DynamicAbilityTags.AddTag(UhuAbility->StartupInputTag);
+			AbilitySpec.DynamicAbilityTags.AddTag(FUhuGameplayTags::Get().Abilities_Status_Equipped);
+			GiveAbility(AbilitySpec);
+		}
+	}
+	bStartupAbilitiesGiven = true;
+	AbilitiesGivenDelegate.Broadcast();
+}
+
 void UUhuAbilitySystemComponent::GiveStartupAbilities()
 {
 	for (TSubclassOf<UGameplayAbility>& Ability : DefaultAbilities)
@@ -58,3 +76,29 @@ bool UUhuAbilitySystemComponent::ServerApplyAttributePoint_Validate(FGameplayAtt
 	return true;
 }
 
+void UUhuAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if (!Delegate.ExecuteIfBound(AbilitySpec))
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to execute delegate in %hs"), __FUNCTION__);
+		}
+	}
+}
+
+FGameplayTag UUhuAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Ability)
+	{
+		for (FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities"))))
+			{
+				return Tag;
+			}
+		}
+	}
+	return FGameplayTag();
+}

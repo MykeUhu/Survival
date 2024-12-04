@@ -26,6 +26,7 @@ AUhuSurvivalCharacter::AUhuSurvivalCharacter()
     MilestoneTable = nullptr;
 }
 
+
 float AUhuSurvivalCharacter::GetTotalDistanceWalkedKM() const
 {
     return FMath::RoundToFloat((TotalDistanceWalked / 100000.0f) * 10.0f) / 10.0f;
@@ -35,6 +36,7 @@ float AUhuSurvivalCharacter::GetTotalDistanceRunKM() const
 {
     return FMath::RoundToFloat((TotalDistanceRun / 100000.0f) * 10.0f) / 10.0f;
 }
+
 
 void AUhuSurvivalCharacter::SetMovementSpeedTag(FGameplayTag NewSpeedTag)
 {
@@ -120,6 +122,11 @@ void AUhuSurvivalCharacter::BeginPlay()
     {
         UE_LOG(LogTemp, Warning, TEXT("MilestoneTable is not set in the Blueprint!"));
     }
+    // Binde das Ereignis OnMilestoneReached
+    if (DistanceProgressionComponent)
+    {
+        DistanceProgressionComponent->OnMilestoneReached.AddDynamic(this, &AUhuSurvivalCharacter::OnMilestoneReached);
+    }
 }
 
 void AUhuSurvivalCharacter::Tick(float DeltaTime)
@@ -127,6 +134,12 @@ void AUhuSurvivalCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     UpdateDistanceTraveled(DeltaTime);
+}
+
+void AUhuSurvivalCharacter::OnMilestoneReached()
+{
+    UE_LOG(LogTemp, Log, TEXT("Milestone reached! Triggering event with Gameplay Tag."));
+    // Hier kannst du weitere Logik hinzufügen, die beim Erreichen eines Meilensteins ausgeführt werden soll
 }
 
 bool AUhuSurvivalCharacter::IsWalking() const
@@ -176,6 +189,7 @@ void AUhuSurvivalCharacter::UpdateDistanceTraveled(float DeltaTime)
         SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Running, Distance);
     }
 }
+
 
 void AUhuSurvivalCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

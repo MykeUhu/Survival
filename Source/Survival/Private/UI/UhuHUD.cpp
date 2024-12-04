@@ -2,24 +2,33 @@
 // Copyright by MykeUhu
 
 #include "UI/UhuHUD.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/Widget/UhuUserWidget.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 
-AUhuHUD::AUhuHUD()
+UOverlayWidgetController* AUhuHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
 {
+	if (OverlayWidgetController == nullptr)
+	{
+		OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
+		OverlayWidgetController->SetWidgetControllerParams(WCParams);
+		OverlayWidgetController->BindCallbacksToDependencies();
+	}
+	return OverlayWidgetController;
 }
 
-void AUhuHUD::BeginPlay()
+void AUhuHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
-	Super::BeginPlay();
+	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_UhuHUD"));
+	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_UhuHUD"));
+	
+	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
+	OverlayWidget = Cast<UUhuUserWidget>(Widget);
+	
+	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
+	UOverlayWidgetController* WidgetController = GetOverlayWidgetController(WidgetControllerParams);
 
-	if (MainUIClass)
-	{
-		MainUIWidget = CreateWidget<UUserWidget>(GetOwningPlayerController(), MainUIClass);
-		if (MainUIWidget)
-		{
-			MainUIWidget->AddToViewport();
-			CreateMainUI();
-		}
-	}
+	OverlayWidget->SetWidgetController(WidgetController);
+	WidgetController->BroadcastInitialValues();
+	Widget->AddToViewport();
 }
 

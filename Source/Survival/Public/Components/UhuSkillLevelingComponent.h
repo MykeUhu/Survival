@@ -4,9 +4,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
-#include "Data/UhuAttributeLevelingDataTable.h"
+#include "Components/ActorComponent.h"
 #include "UhuSkillLevelingComponent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -14,74 +13,68 @@ struct FSkillLevelData
 {
     GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     FGameplayTag SkillTag;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 Level = 1;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    int32 Level;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float Experience = 0.0f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float ExperienceRequiredForNextLevel = 100.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    float Experience;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    float ExperienceRequiredForNextLevel;
 };
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SURVIVAL_API UUhuSkillLevelingComponent : public UActorComponent
 {
     GENERATED_BODY()
 
-public:    
+public:
     UUhuSkillLevelingComponent();
 
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+    virtual void BeginPlay() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Skill Leveling")
+    // Aktualisiere den Fortschritt einer Fähigkeit
     void UpdateSkillProgress(FGameplayTag SkillTag, float Progress);
 
-    UFUNCTION(BlueprintCallable, Category = "Skill Leveling")
-    FSkillLevelData GetSkillLevelData(FGameplayTag SkillTag) const;
-
+    // Server-seitige Methode zur Aktualisierung der Bewegungsfähigkeiten
     UFUNCTION(Server, Reliable, WithValidation)
     void ServerUpdateMovementSkills(float WalkedDistanceKM, float RunDistanceKM);
 
-    UFUNCTION(BlueprintCallable, Category = "Skill Leveling")
-    int32 GetAvailableSkillPoints() const { return AvailableSkillPoints; }
-
-    UFUNCTION(Server, Reliable, WithValidation)
-    void ServerApplySkillPointToAttribute(FGameplayTag AttributeTag);
+    // Initialisiere die Attributpunkte
+    void InitializeAttributePoints();
 
 protected:
-    virtual void BeginPlay() override;
-
-private:
-    UPROPERTY(EditDefaultsOnly, Category = "Skill Leveling")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
     UDataTable* AttributeLevelingDataTable;
 
-    UPROPERTY(Replicated)
+    UPROPERTY(BlueprintReadOnly, Category = "Leveling")
     int32 CurrentLevel;
 
-    UPROPERTY(ReplicatedUsing = OnRep_AvailableSkillPoints)
+    UPROPERTY(BlueprintReadOnly, Category = "Leveling")
     int32 AvailableSkillPoints;
 
-    UPROPERTY(ReplicatedUsing = OnRep_SkillLevels)
+    UPROPERTY(BlueprintReadOnly, Category = "Leveling")
     TArray<FSkillLevelData> SkillLevels;
 
     UFUNCTION()
-    void OnRep_SkillLevels();
+    void OnMilestoneReached();
 
-    UFUNCTION()
-    void OnRep_AvailableSkillPoints();
-
-    void LevelUpSkill(FGameplayTag SkillTag);
     void CheckForLevelUp(float TotalDistanceKM);
     void AwardSkillPoints(int32 Points);
+    void LevelUpSkill(FGameplayTag SkillTag);
 
     UFUNCTION(Client, Reliable)
     void ClientUpdateSkillLevels(const TArray<FSkillLevelData>& NewSkillLevels);
 
     UFUNCTION(Client, Reliable)
     void ClientUpdateAvailableSkillPoints(int32 NewAvailableSkillPoints);
-};
 
+    UFUNCTION()
+    void OnRep_SkillLevels();
+
+    UFUNCTION()
+    void OnRep_AvailableSkillPoints();
+};

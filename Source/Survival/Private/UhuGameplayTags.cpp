@@ -38,26 +38,26 @@ void FUhuGameplayTags::InitializeNativeGameplayTags()
     );
     GameplayTags.Attribute_Vital_Temperature = UGameplayTagsManager::Get().AddNativeGameplayTag(
         FName("Attribute.Vital.Temperature"),
-        FString("Represents the temperature resistance of the character.")
+        FString("Represents the temperature of the character.")
     );
 
     /*
      * Vital Max Attributes
      */
     GameplayTags.Attribute_Vital_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(
-        FName("Attribute.MaxHealth"),
+        FName("Attribute.Vital.MaxHealth"),
         FString("Represents the maximum health value.")
     );
     GameplayTags.Attribute_Vital_MaxHunger = UGameplayTagsManager::Get().AddNativeGameplayTag(
-        FName("Attribute.MaxHunger"),
+        FName("Attribute.Vital.MaxHunger"),
         FString("Represents the maximum hunger value.")
     );
     GameplayTags.Attribute_Vital_MaxThirst = UGameplayTagsManager::Get().AddNativeGameplayTag(
-        FName("Attribute.MaxThirst"),
+        FName("Attribute.Vital.MaxThirst"),
         FString("Represents the maximum thirst value.")
     );
     GameplayTags.Attribute_Vital_MaxStamina = UGameplayTagsManager::Get().AddNativeGameplayTag(
-        FName("Attribute.MaxStamina"),
+        FName("Attribute.Vital.MaxStamina"),
         FString("Represents the maximum stamina value.")
     );
 
@@ -269,6 +269,18 @@ void FUhuGameplayTags::InitializeNativeGameplayTags()
 	/*
 	 * Abilities
 	 */
+	// Meta
+	GameplayTags.Abilities_Status_Unlocked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Status.Unlocked"),
+	FString("Indicates that a certain ability status has been unlocked.")
+);
+
+	GameplayTags.Abilities_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.None"),
+		FString("Represents the absence of any abilities.")
+	);
+
+	// Other
 	GameplayTags.Ability_Survival_FindConsumables = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Ability.Survival.FindConsumables"),
 		FString("Marks food or water sources in the area with an outline for a certain duration.")

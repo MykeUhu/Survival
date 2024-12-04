@@ -9,6 +9,7 @@
 #include "GameplayTagContainer.h"
 #include "Components/DistanceProgressionComponent.h"
 #include "UhuGameplayTags.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "UhuSurvivalCharacter.generated.h"
 
 class UUhuMovementDataAsset;
@@ -53,6 +54,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     FGameplayTag GetCurrentSpeedTag() const { return CurrentSpeedTag; }
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+    ECharacterClass CharacterClass = ECharacterClass::Player;
 
 protected:
     virtual void BeginPlay() override;
@@ -101,6 +105,9 @@ private:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS|Leveling", meta = (AllowPrivateAccess = "true"))
     UDataTable* MilestoneTable;
+
+    UFUNCTION()
+    void OnMilestoneReached();
 
     FGameplayTag OldSpeedTag;
 

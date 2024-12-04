@@ -8,6 +8,15 @@
 #include "AbilitySystemComponent.h"
 #include "UhuAttributeSet.generated.h"
 
+/*
+ * BoilerPlate für neue Attribute
+ * hier einfügen,
+ * in UhuGameplayTags
+ * dann in GE_VitalAttributes in BP die Attribute hinzufügen
+ * DA_AttributeInfo
+ * Broadcast Initial Values in Overlay WidgetController!
+ */
+
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
     GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
     GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \

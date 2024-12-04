@@ -8,6 +8,8 @@
 #include "Leveling/UhuLevelingMilestones.h"
 #include "DistanceProgressionComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMilestoneReached);
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SURVIVAL_API UDistanceProgressionComponent : public UActorComponent
 {
@@ -23,6 +25,10 @@ public:
 
 	// Initialisiere mit DataTable
 	void InitializeMilestones(UDataTable* MilestoneTable);
+
+	// Ereignis, das ausgelöst wird, wenn ein Meilenstein erreicht wird
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnMilestoneReached OnMilestoneReached;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progression")
