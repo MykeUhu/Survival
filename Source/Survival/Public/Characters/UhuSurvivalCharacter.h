@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
+#include "Components/DistanceProgressionComponent.h"
 #include "UhuGameplayTags.h"
 #include "UhuSurvivalCharacter.generated.h"
 
@@ -81,19 +82,25 @@ private:
     UPROPERTY(EditDefaultsOnly, Category = "GAS|Movement")
     TSubclassOf<UGameplayEffect> MovementSpeedEffect;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Abilities", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skills", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Skills", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UUhuSkillLevelingComponent> SkillLevelingComponent;
 
     int32 CurrentSpeedLevel = 4;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Movement", meta = (AllowPrivateAccess = "true"))
     float TotalDistanceWalked;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Movement", meta = (AllowPrivateAccess = "true"))
     float TotalDistanceRun;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Leveling", meta = (AllowPrivateAccess = "true"))
+    UDistanceProgressionComponent* DistanceProgressionComponent;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS|Leveling", meta = (AllowPrivateAccess = "true"))
+    UDataTable* MilestoneTable;
 
     FGameplayTag OldSpeedTag;
 

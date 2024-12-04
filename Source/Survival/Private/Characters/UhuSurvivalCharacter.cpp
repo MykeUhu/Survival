@@ -17,8 +17,13 @@ AUhuSurvivalCharacter::AUhuSurvivalCharacter()
     AbilitySystemComponent = CreateDefaultSubobject<UUhuAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
     SkillLevelingComponent = CreateDefaultSubobject<UUhuSkillLevelingComponent>(TEXT("SkillLevelingComponent"));
     
+    DistanceProgressionComponent = CreateDefaultSubobject<UDistanceProgressionComponent>(TEXT("DistanceProgressionComponent"));
+    
     TotalDistanceWalked = 0.0f;
     TotalDistanceRun = 0.0f;
+    
+    // Initialisiere die DataTable als nullptr
+    MilestoneTable = nullptr;
 }
 
 float AUhuSurvivalCharacter::GetTotalDistanceWalkedKM() const
@@ -106,6 +111,15 @@ void AUhuSurvivalCharacter::BeginPlay()
     }
 
     OldSpeedTag = CurrentSpeedTag;
+    // Lade die DataTable, wenn sie im Detailpanel gesetzt wurde
+    if (MilestoneTable)
+    {
+        DistanceProgressionComponent->InitializeMilestones(MilestoneTable);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("MilestoneTable is not set in the Blueprint!"));
+    }
 }
 
 void AUhuSurvivalCharacter::Tick(float DeltaTime)
