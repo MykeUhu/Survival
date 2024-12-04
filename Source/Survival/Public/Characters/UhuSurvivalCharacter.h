@@ -1,8 +1,6 @@
 // UhuSurvivalCharacter.h
 // Copyright by MykeUhu
 
-// TODO: Check if ther are to much bools and MovementSpeed Functions
-// TODO: Running Distance to UhuSkillLevelingComponent
 #pragma once
 
 #include "CoreMinimal.h"
@@ -34,27 +32,26 @@ public:
     void UpdateMovementSpeed(int32 SpeedLevel);
 
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
-    float GetTotalDistanceWalked() const { return TotalDistanceWalked; }
-
-    UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
-    float GetTotalDistanceRun() const { return TotalDistanceRun; }
-
-    // Liefert die gelaufene Distanz in Kilometern, gerundet auf eine Nachkommastelle
-    UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     float GetTotalDistanceWalkedKM() const;
 
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     float GetTotalDistanceRunKM() const;
 
-    // Setzt den aktuellen MovementSpeedTag und aktualisiert die Geschwindigkeit
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     void SetMovementSpeedTag(FGameplayTag NewSpeedTag);
 
-    // Wendet die Geschwindigkeit auf den Charakter an
     void ApplyMovementSpeed(float Speed);
 
-    // Vom PlayerController
     void CharacterMove(const FVector2D& MoveDirection);
+
+    UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
+    void AdjustMovementSpeed(int32 Delta);
+
+    UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
+    void RestorePreviousMovementSpeed();
+
+    UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
+    FGameplayTag GetCurrentSpeedTag() const { return CurrentSpeedTag; }
 
 protected:
     virtual void BeginPlay() override;
@@ -68,7 +65,6 @@ protected:
     UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Attributes")
     TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
 
-    // Aktueller GameplayTag für die Bewegungsgeschwindigkeit
     UPROPERTY(BlueprintReadWrite, Category = "Movement")
     FGameplayTag CurrentSpeedTag;
     
@@ -99,10 +95,16 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
     float TotalDistanceRun;
 
-    // Identifiziert den aktuellen Bewegungstyp basierend auf den GameplayTags
+    FGameplayTag OldSpeedTag;
+
+    UPROPERTY()
+    FGameplayTag PreviousSpeedTag;
+
     bool IsWalking() const;
     bool IsRunning() const;
     
     void UpdateDistanceTraveled(float DeltaTime);
+    void RemoveAllMovementSpeedTags();
+    void ApplyMovementSpeedTag(FGameplayTag SpeedTag);
 };
 

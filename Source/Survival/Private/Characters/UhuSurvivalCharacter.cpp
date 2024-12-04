@@ -39,21 +39,10 @@ void AUhuSurvivalCharacter::SetMovementSpeedTag(FGameplayTag NewSpeedTag)
         return;
     }
 
-    // Entferne das alte Tag
-    if (AbilitySystemComponent)
-    {
-        AbilitySystemComponent->RemoveLooseGameplayTag(CurrentSpeedTag);
-    }
+    RemoveAllMovementSpeedTags();
+    ApplyMovementSpeedTag(NewSpeedTag);
 
-    // Setze das neue Tag
-    CurrentSpeedTag = NewSpeedTag;
-    if (AbilitySystemComponent)
-    {
-        AbilitySystemComponent->AddLooseGameplayTag(NewSpeedTag);
-        UE_LOG(LogTemp, Display, TEXT("Added GameplayTag: %s"), *NewSpeedTag.ToString());
-    }
-
-    // Setze die Geschwindigkeit des Characters
+    // Set the character's speed
     const FMovementSpeedLevel SpeedLevel = MovementDataAsset->GetSpeedLevelForTag(NewSpeedTag);
     if (SpeedLevel.Speed >= 0.f)
     {
@@ -63,12 +52,13 @@ void AUhuSurvivalCharacter::SetMovementSpeedTag(FGameplayTag NewSpeedTag)
     {
         UE_LOG(LogTemp, Warning, TEXT("Invalid Speed Level for Tag: %s"), *NewSpeedTag.ToString());
     }
-}
 
+    UE_LOG(LogTemp, Display, TEXT("Current Speed Tag: %s"), *CurrentSpeedTag.ToString());
+    UE_LOG(LogTemp, Display, TEXT("Previous Speed Tag: %s"), *PreviousSpeedTag.ToString());
+}
 
 void AUhuSurvivalCharacter::ApplyMovementSpeed(float Speed)
 {
-    // Setze die MaxWalkSpeed im MovementComponent
     if (GetCharacterMovement())
     {
         GetCharacterMovement()->MaxWalkSpeed = Speed;
@@ -79,7 +69,7 @@ void AUhuSurvivalCharacter::CharacterMove(const FVector2D& MoveDirection)
 {
     if (Controller)
     {
-        // Vorwärtsbewegung (X-Achse)
+        // Forward movement (X-axis)
         if (MoveDirection.X != 0.0f)
         {
             const FRotator Rotation = Controller->GetControlRotation();
@@ -89,7 +79,7 @@ void AUhuSurvivalCharacter::CharacterMove(const FVector2D& MoveDirection)
             AddMovementInput(ForwardDirection, MoveDirection.X);
         }
 
-        // Seitwärtsbewegung (Y-Achse)
+        // Sideways movement (Y-axis)
         if (MoveDirection.Y != 0.0f)
         {
             const FRotator Rotation = Controller->GetControlRotation();
@@ -106,16 +96,16 @@ void AUhuSurvivalCharacter::BeginPlay()
     Super::BeginPlay();
     
     InitializeDefaultAttributes();
-    // Setze den Standard-Speed-Tag, falls definiert
     if (MovementDataAsset && MovementDataAsset->DefaultSpeedTag.IsValid())
     {
-        // Setze den Standard-Movement-Tag
         SetMovementSpeedTag(MovementDataAsset->DefaultSpeedTag);
     }
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("No Default Speed Tag defined in Movement Data Asset!"));
     }
+
+    OldSpeedTag = CurrentSpeedTag;
 }
 
 void AUhuSurvivalCharacter::Tick(float DeltaTime)
@@ -130,13 +120,13 @@ bool AUhuSurvivalCharacter::IsWalking() const
     return CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_1) ||
            CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_2) ||
            CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_3) ||
-           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_4);
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_4) ||
+           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_5);
 }
 
 bool AUhuSurvivalCharacter::IsRunning() const
 {
-    return CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_5) ||
-           CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_6) ||
+    return CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_6) ||
            CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_7) ||
            CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_8) ||
            CurrentSpeedTag.MatchesTag(FUhuGameplayTags::Get().Movement_Speed_9) ||
@@ -146,30 +136,32 @@ bool AUhuSurvivalCharacter::IsRunning() const
 void AUhuSurvivalCharacter::UpdateDistanceTraveled(float DeltaTime)
 {
     float VelocityMagnitude = GetVelocity().Size();
-    
-    // Keine Bewegung -> Kein Update
+
+    // If the character is not moving
     if (VelocityMagnitude <= KINDA_SMALL_NUMBER)
     {
+        if (CurrentSpeedTag != FUhuGameplayTags::Get().Movement_Speed_0)
+        {
+            SetMovementSpeedTag(FUhuGameplayTags::Get().Movement_Speed_0);
+            UE_LOG(LogTemp, Display, TEXT("Character is now idle."));
+        }
         return;
     }
 
-    // Distanzberechnung
+    // Distance calculation
     float Distance = VelocityMagnitude * DeltaTime;
 
-    // Gehender Zustand
     if (IsWalking())
     {
         TotalDistanceWalked += Distance;
         SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Walking, Distance);
     }
-    // Laufender/Sprintender Zustand
     else if (IsRunning())
     {
         TotalDistanceRun += Distance;
         SkillLevelingComponent->UpdateSkillProgress(FUhuGameplayTags::Get().Skill_Running, Distance);
     }
 }
-
 
 void AUhuSurvivalCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -196,7 +188,7 @@ void AUhuSurvivalCharacter::UpdateMovementSpeed(int32 SpeedLevel)
 
     // Add new speed tag
     const FMovementSpeedLevel& NewSpeedLevel = MovementDataAsset->SpeedLevels[CurrentSpeedLevel];
-    AbilitySystemComponent->AddLooseGameplayTag(NewSpeedLevel.SpeedTag);
+    SetMovementSpeedTag(NewSpeedLevel.SpeedTag);
 
     // Apply movement speed effect
     if (MovementSpeedEffect)
@@ -210,9 +202,6 @@ void AUhuSurvivalCharacter::UpdateMovementSpeed(int32 SpeedLevel)
             AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
         }
     }
-
-    // Update character movement
-    GetCharacterMovement()->MaxWalkSpeed = NewSpeedLevel.Speed;
 }
 
 void AUhuSurvivalCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const
@@ -232,5 +221,57 @@ void AUhuSurvivalCharacter::InitializeDefaultAttributes() const
     ApplyEffectToSelf(DefaultVitalAttributes, 1.0f);
     ApplyEffectToSelf(DefaultPrimaryAttributes, 1.0f);
     ApplyEffectToSelf(DefaultSecondaryAttributes, 1.0f);
+}
+
+void AUhuSurvivalCharacter::AdjustMovementSpeed(int32 Delta)
+{
+    if (!MovementDataAsset) return;
+
+    int32 CurrentIndex = MovementDataAsset->SpeedLevels.IndexOfByPredicate([this](const FMovementSpeedLevel& SpeedLevel) {
+        return SpeedLevel.SpeedTag == CurrentSpeedTag;
+    });
+
+    if (CurrentIndex != INDEX_NONE)
+    {
+        int32 NewIndex = FMath::Clamp(CurrentIndex + Delta, 1, MovementDataAsset->SpeedLevels.Num() - 1);
+        SetMovementSpeedTag(MovementDataAsset->SpeedLevels[NewIndex].SpeedTag);
+    }
+}
+
+void AUhuSurvivalCharacter::RestorePreviousMovementSpeed()
+{
+    if (PreviousSpeedTag.IsValid())
+    {
+        SetMovementSpeedTag(PreviousSpeedTag);
+    }
+    else
+    {
+        // If no previous speed, set to default walking speed
+        SetMovementSpeedTag(FUhuGameplayTags::Get().Movement_Speed_1);
+    }
+}
+
+void AUhuSurvivalCharacter::RemoveAllMovementSpeedTags()
+{
+    if (AbilitySystemComponent)
+    {
+        for (const FMovementSpeedLevel& SpeedLevel : MovementDataAsset->SpeedLevels)
+        {
+            AbilitySystemComponent->RemoveLooseGameplayTag(SpeedLevel.SpeedTag);
+        }
+    }
+}
+
+void AUhuSurvivalCharacter::ApplyMovementSpeedTag(FGameplayTag SpeedTag)
+{
+    if (AbilitySystemComponent)
+    {
+        if (CurrentSpeedTag != FUhuGameplayTags::Get().Movement_Speed_0)
+        {
+            PreviousSpeedTag = CurrentSpeedTag;
+        }
+        CurrentSpeedTag = SpeedTag;
+        AbilitySystemComponent->AddLooseGameplayTag(SpeedTag);
+    }
 }
 

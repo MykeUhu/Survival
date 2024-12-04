@@ -19,6 +19,9 @@ public:
 	void InitializeAttributes();
 	void GiveStartupAbilities();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerApplyAttributePoint(FGameplayAttribute Attribute, float Value);
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> DefaultAttributeEffects;

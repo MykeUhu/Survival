@@ -39,3 +39,22 @@ void UUhuAbilitySystemComponent::GiveStartupAbilities()
 	}
 }
 
+void UUhuAbilitySystemComponent::ServerApplyAttributePoint_Implementation(FGameplayAttribute Attribute, float Value)
+{
+	FGameplayEffectContextHandle EffectContext = MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(UGameplayEffect::StaticClass(), 1, EffectContext);
+	if (SpecHandle.IsValid())
+	{
+		SpecHandle.Data->SetSetByCallerMagnitude(Attribute.GetUProperty()->GetFName(), Value);
+		ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+}
+
+bool UUhuAbilitySystemComponent::ServerApplyAttributePoint_Validate(FGameplayAttribute Attribute, float Value)
+{
+	// Add validation logic here if needed
+	return true;
+}
+
