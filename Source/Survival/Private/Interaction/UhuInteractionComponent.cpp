@@ -2,7 +2,7 @@
 // Copyright by MykeUhu
 
 #include "Interaction/UhuInteractionComponent.h"
-#include "Interaction/UhuInteractableInterface.h"
+#include "Interaction/PlayerInterface.h"
 
 UUhuInteractionComponent::UUhuInteractionComponent()
 {
@@ -25,7 +25,7 @@ void UUhuInteractionComponent::Interact()
 {
 	if (CurrentInteractable)
 	{
-		IUhuInteractableInterface::Execute_Interact(CurrentInteractable, GetOwner());
+		IPlayerInterface::Execute_Interact(CurrentInteractable, GetOwner());
 	}
 }
 
@@ -44,7 +44,7 @@ void UUhuInteractionComponent::FindInteractable()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams))
 	{
 		AActor* HitActor = HitResult.GetActor();
-		if (HitActor && HitActor->Implements<UUhuInteractableInterface>())
+		if (HitActor && HitActor->Implements<UPlayerInterface>())
 		{
 			if (CurrentInteractable != HitActor)
 			{

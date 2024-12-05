@@ -109,6 +109,8 @@ public:
 
 	FGameplayTag Abilities_None;
 	FGameplayTag Abilities_Status_Unlocked;
+	FGameplayTag Abilities_Status_Eligible;
+	FGameplayTag Abilities_Type_Passive;
 	// Other
 	FGameplayTag Ability_Survival_FindConsumables;  // Survival-Nahrung oder Wasser entdecken: Markiert Nahrung oder Wasserquellen in der Umgebung durch Outline für gewisse Zeit
 

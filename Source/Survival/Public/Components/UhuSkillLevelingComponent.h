@@ -13,17 +13,17 @@ struct FSkillLevelData
 {
     GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGameplayTag SkillTag;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    int32 Level;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 Level = 1;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    float Experience;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-    float ExperienceRequiredForNextLevel;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float Experience = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float ExperienceRequiredForNextLevel = 100.0f;
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))

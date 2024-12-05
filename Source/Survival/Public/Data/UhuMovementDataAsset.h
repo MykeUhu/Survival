@@ -14,15 +14,14 @@ struct FMovementSpeedLevel
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float Speed;
+	float Speed = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float StaminaCost;
+	float StaminaCost = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag SpeedTag;
 };
-
 UCLASS()
 class SURVIVAL_API UUhuMovementDataAsset : public UDataAsset
 {

@@ -6,32 +6,39 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "GameplayTagContainer.h"
-#include "Components/DistanceProgressionComponent.h"
 #include "UhuGameplayTags.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "Interaction/PlayerInterface.h"
 #include "UhuSurvivalCharacter.generated.h"
 
+class UUhuAbilitySystemComponent;
+class UUhuAttributeSet;
+class UUhuSkillLevelingComponent;
+class UDistanceProgressionComponent;
 class UUhuMovementDataAsset;
-class UAbilitySystemComponent;
 class UGameplayEffect;
 class UGameplayAbility;
-class UUhuSkillLevelingComponent;
+class UDataTable;
 
 UCLASS(config=Game)
-class SURVIVAL_API AUhuSurvivalCharacter : public ACharacter, public IAbilitySystemInterface
+class SURVIVAL_API AUhuSurvivalCharacter : public ACharacter, public IAbilitySystemInterface, public IPlayerInterface
 {
     GENERATED_BODY()
-
 public:
     AUhuSurvivalCharacter();
 
+    virtual void PossessedBy(AController* NewController) override;
+    virtual void OnRep_PlayerState() override;
     virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+    UUhuAttributeSet* GetAttributeSet() const { return AttributeSet; }
+    
+    virtual ECharacterClass GetCharacterClass_Implementation();
 
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
-    void UpdateMovementSpeed(int32 SpeedLevel);
+    void SetMovementSpeedTag(FGameplayTag NewSpeedTag);
 
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     float GetTotalDistanceWalkedKM() const;
@@ -40,10 +47,6 @@ public:
     float GetTotalDistanceRunKM() const;
 
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
-    void SetMovementSpeedTag(FGameplayTag NewSpeedTag);
-
-    void ApplyMovementSpeed(float Speed);
-
     void CharacterMove(const FVector2D& MoveDirection);
 
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
@@ -55,11 +58,26 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Uhu|Movement")
     FGameplayTag GetCurrentSpeedTag() const { return CurrentSpeedTag; }
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
-    ECharacterClass CharacterClass = ECharacterClass::Player;
-
 protected:
     virtual void BeginPlay() override;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+    UUhuAbilitySystemComponent* AbilitySystemComponent;
+
+    UPROPERTY()
+    UUhuAttributeSet* AttributeSet;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UUhuSkillLevelingComponent* SkillLevelingComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UDistanceProgressionComponent* DistanceProgressionComponent;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+    UUhuMovementDataAsset* MovementDataAsset;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
+    UDataTable* MilestoneTable;
 
     UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Attributes")
     TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
@@ -70,55 +88,42 @@ protected:
     UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GAS|Attributes")
     TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
 
+    // Replizierbare Variable für Bewegungsgeschwindigkeit
+    UPROPERTY(ReplicatedUsing = OnRep_MovementSpeed)
+    float MaxWalkSpeed;
+
+    // Funktion, die bei Änderungen der MaxWalkSpeed ausgeführt wird
+    UFUNCTION()
+    void OnRep_MovementSpeed();
+    
     UPROPERTY(BlueprintReadWrite, Category = "Movement")
     FGameplayTag CurrentSpeedTag;
-    
-    UPROPERTY(EditAnywhere, Category = "Movement")
-    TObjectPtr<UUhuMovementDataAsset> MovementDataAsset;
-    
-    void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-    virtual void InitializeDefaultAttributes() const;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+    ECharacterClass CharacterClass = ECharacterClass::Player;
+
+    UFUNCTION()
+    void OnMilestoneReached();
 
 private:
+    void InitializeAttributes();
+    void GiveDefaultAbilities();
+    void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
+    void ApplyMovementSpeed(float Speed);
+    void RemoveAllMovementSpeedTags();
+    void ApplyMovementSpeedTag(FGameplayTag SpeedTag);
+    void UpdateDistanceTraveled(float DeltaTime);
+    bool IsWalking() const;
+    bool IsRunning() const;
+
     UPROPERTY(EditAnywhere, Category = "GAS|Abilities")
     TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
     UPROPERTY(EditDefaultsOnly, Category = "GAS|Movement")
     TSubclassOf<UGameplayEffect> MovementSpeedEffect;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Abilities", meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Skills", meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UUhuSkillLevelingComponent> SkillLevelingComponent;
-
-    int32 CurrentSpeedLevel = 4;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Movement", meta = (AllowPrivateAccess = "true"))
+    int32 CurrentSpeedLevel;
     float TotalDistanceWalked;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Movement", meta = (AllowPrivateAccess = "true"))
     float TotalDistanceRun;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS|Leveling", meta = (AllowPrivateAccess = "true"))
-    UDistanceProgressionComponent* DistanceProgressionComponent;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS|Leveling", meta = (AllowPrivateAccess = "true"))
-    UDataTable* MilestoneTable;
-
-    UFUNCTION()
-    void OnMilestoneReached();
-
-    FGameplayTag OldSpeedTag;
-
-    UPROPERTY()
     FGameplayTag PreviousSpeedTag;
-
-    bool IsWalking() const;
-    bool IsRunning() const;
-    
-    void UpdateDistanceTraveled(float DeltaTime);
-    void RemoveAllMovementSpeedTags();
-    void ApplyMovementSpeedTag(FGameplayTag SpeedTag);
 };
-

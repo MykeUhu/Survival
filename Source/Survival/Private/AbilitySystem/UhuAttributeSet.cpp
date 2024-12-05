@@ -61,7 +61,6 @@ UUhuAttributeSet::UUhuAttributeSet()
 void UUhuAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    const FUhuGameplayTags& GameplayTags = FUhuGameplayTags::Get();
 
     // Vital Attributes
     DOREPLIFETIME_CONDITION_NOTIFY(UUhuAttributeSet, Health, COND_None, REPNOTIFY_Always);

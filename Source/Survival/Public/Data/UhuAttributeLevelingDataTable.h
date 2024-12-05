@@ -13,24 +13,23 @@ struct FUhuAttributeLevelingTableRow : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
-	float WalkDistanceKM;
+	float WalkDistanceKM = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
-	float WalkXPMultiplier;
+	float WalkXPMultiplier = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
-	float RunDistanceKM;
+	float RunDistanceKM = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
-	float RunXPMultiplier;
+	float RunXPMultiplier = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
-	float CraftingXPRequired;
+	float CraftingXPRequired = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
-	float SurvivalXPRequired;
+	float SurvivalXPRequired = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Leveling")
-	int32 SkillPointsAwarded;
+	int32 SkillPointsAwarded = 0;
 };
-

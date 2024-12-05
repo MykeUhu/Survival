@@ -5,6 +5,7 @@
 #include "UI/Widget/UhuUserWidget.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
+
 UOverlayWidgetController* AUhuHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
 {
 	if (OverlayWidgetController == nullptr)
@@ -20,10 +21,10 @@ void AUhuHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyste
 {
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_UhuHUD"));
 	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_UhuHUD"));
-	
+    
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 	OverlayWidget = Cast<UUhuUserWidget>(Widget);
-	
+    
 	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
 	UOverlayWidgetController* WidgetController = GetOverlayWidgetController(WidgetControllerParams);
 
@@ -31,4 +32,3 @@ void AUhuHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyste
 	WidgetController->BroadcastInitialValues();
 	Widget->AddToViewport();
 }
-

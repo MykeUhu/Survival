@@ -19,7 +19,7 @@ struct FCraftingRecipe
 	FString ResultItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 ResultQuantity;
+	int32 ResultQuantity = 1;
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))

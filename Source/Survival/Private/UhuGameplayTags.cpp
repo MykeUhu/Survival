@@ -273,11 +273,21 @@ void FUhuGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Status_Unlocked = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Abilities.Status.Unlocked"),
 	FString("Indicates that a certain ability status has been unlocked.")
-);
+	);
 
 	GameplayTags.Abilities_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.None"),
 		FString("Represents the absence of any abilities.")
+	);
+	
+	GameplayTags.Abilities_Status_Eligible = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Status.Eligible"),
+		FString("need Description")
+	);
+
+	GameplayTags.Abilities_Type_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Type.Passive"),
+		FString("need Description")
 	);
 
 	// Other

@@ -1,7 +1,6 @@
 ﻿// OverlayWidgetController.h
 // Copyright by MykeUhu
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -14,12 +13,11 @@ class UUhuAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 
-
 UCLASS(BlueprintType, Blueprintable)
 class SURVIVAL_API UOverlayWidgetController : public UUhuWidgetController
 {
 	GENERATED_BODY()
-	
+    
 public:
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
@@ -27,7 +25,7 @@ public:
 	// Vital Attributes
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangedSignature OnHealthChanged;
-	
+    
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangedSignature OnHungerChanged;
 
@@ -52,13 +50,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangedSignature OnMaxStaminaChanged;
-
-	// Other Stuff
-	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
-	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
-
-	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
-	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
 
 protected:
 	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot) const;

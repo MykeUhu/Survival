@@ -27,6 +27,7 @@ public:
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 
 protected:
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Game Rules")
 	int32 MaxPlayers;
 

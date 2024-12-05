@@ -2,14 +2,13 @@
 // Copyright by MykeUhu
 
 #include "UhuAssetManager.h"
-
 #include "AbilitySystemGlobals.h"
 #include "UhuGameplayTags.h"
 
 UUhuAssetManager& UUhuAssetManager::Get()
 {
 	check(GEngine);
-	
+    
 	UUhuAssetManager* UhuAssetManager = Cast<UUhuAssetManager>(GEngine->AssetManager);
 	return *UhuAssetManager;
 }

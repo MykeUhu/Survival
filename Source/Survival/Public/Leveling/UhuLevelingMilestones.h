@@ -14,13 +14,11 @@ struct FRewardData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 SkillPointsAwarded;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rewards")
+	int32 SkillPointsAwarded = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ExperiencePoints;
-
-	// Weitere Belohnungen können hier ergänzt werden
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rewards")
+	float ExperiencePoints = 0.0f;
 };
 
 // Datenstruktur für jeden Meilenstein
@@ -32,10 +30,10 @@ struct FDistanceMilestone : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName MilestoneID;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float RequiredDistanceKM;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Milestone")
+	float RequiredDistanceKM = 0.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Milestone")
 	FRewardData Reward;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

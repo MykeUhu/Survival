@@ -16,10 +16,10 @@ struct FInventoryItem
 	FString ItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Quantity;
+	int32 Quantity = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Weight;
+	float Weight = 0.0f;
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))

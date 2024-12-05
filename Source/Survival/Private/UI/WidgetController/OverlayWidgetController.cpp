@@ -2,32 +2,29 @@
 // Copyright by MykeUhu
 
 #include "UI/WidgetController/OverlayWidgetController.h"
-
 #include "UhuGameplayTags.h"
 #include "AbilitySystem/UhuAbilitySystemComponent.h"
 #include "AbilitySystem/UhuAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
-//#include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Player/UhuPlayerState.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
+    OnHealthChanged.Broadcast(GetUhuAS()->GetHealth());
+    OnHungerChanged.Broadcast(GetUhuAS()->GetHunger());
+    OnThirstChanged.Broadcast(GetUhuAS()->GetThirst());
+    OnStaminaChanged.Broadcast(GetUhuAS()->GetStamina());
+    OnTemperatureChanged.Broadcast(GetUhuAS()->GetTemperature());
 
-	OnHealthChanged.Broadcast(GetUhuAS()->GetHealth());
-	OnHungerChanged.Broadcast(GetUhuAS()->GetHunger());
-	OnThirstChanged.Broadcast(GetUhuAS()->GetThirst());
-	OnStaminaChanged.Broadcast(GetUhuAS()->GetStamina());
-	OnTemperatureChanged.Broadcast(GetUhuAS()->GetTemperature());
-
-	OnMaxHealthChanged.Broadcast(GetUhuAS()->GetMaxHealth());
-	OnMaxHungerChanged.Broadcast(GetUhuAS()->GetMaxHunger());
-	OnMaxThirstChanged.Broadcast(GetUhuAS()->GetMaxThirst());
-	OnMaxStaminaChanged.Broadcast(GetUhuAS()->GetMaxStamina());
+    OnMaxHealthChanged.Broadcast(GetUhuAS()->GetMaxHealth());
+    OnMaxHungerChanged.Broadcast(GetUhuAS()->GetMaxHunger());
+    OnMaxThirstChanged.Broadcast(GetUhuAS()->GetMaxThirst());
+    OnMaxStaminaChanged.Broadcast(GetUhuAS()->GetMaxStamina());
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
-    // Binde die Attribute-Änderungs-Delegaten
+    // Bind attribute change delegates using lambda functions
     AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetUhuAS()->GetHealthAttribute()).AddLambda(
         [this](const FOnAttributeChangeData& Data)
         {
@@ -108,7 +105,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot) const
 {
     const FUhuGameplayTags& GameplayTags = FUhuGameplayTags::Get();
-	
+    
     FUhuAbilityInfo LastSlotInfo;
     LastSlotInfo.StatusTag = GameplayTags.Abilities_Status_Unlocked;
     LastSlotInfo.InputTag = PreviousSlot;

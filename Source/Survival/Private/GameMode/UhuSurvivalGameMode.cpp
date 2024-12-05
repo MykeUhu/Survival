@@ -8,6 +8,7 @@
 AUhuSurvivalGameMode::AUhuSurvivalGameMode()
 {
 	DefaultPawnClass = AUhuSurvivalCharacter::StaticClass();
+	// Set default classes
 	HUDClass = AUhuHUD::StaticClass();
 	MaxPlayers = 4;
 	DayNightCycleDuration = 1200.0f; // 20 minutes
